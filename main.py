@@ -1,11 +1,14 @@
+import os
 import random
 import matplotlib.pyplot as plt
 import numpy as np
 
 # Ce programme pourrait êtré accelerer en utilisant les entiers de 1 a 26
-# plutot que les lettres de A a Z et en desactivant toutes les verifications une fois qu'on est sûr de nos opérateurs,
+# plutot que les lettres de A a Z et en desactivant
+# toutes les verifications une fois qu'on est sûr de nos opérateurs,
 # mais le déboguage est plus facile de cette manière
-# ces fonctions de test ont été ajouté pour palier à nos problèmes de lettres dupliquer dans un premier temps
+# ces fonctions de test ont été ajouté pour palier
+#  à nos problèmes de lettres dupliquer dans un premier temps
 # après croisement , puis pour les duplications de positions
 
 
@@ -13,18 +16,20 @@ import numpy as np
 bigramme = [[0 for x in range(26)] for y in range(26)]
 
 # parse freqBigrammes.txt
-with open('freqBigrammes.txt', 'r') as f:
-    next(f) # on passe la premiere qui ne contient que les noms des colonnes
-    for i,line in enumerate(f):
+with open('freqBigrammes.txt', 'r', encoding="utf8") as f:
+    next(f)  # on passe la premiere qui ne contient que les noms des colonnes
+    for i, line in enumerate(f):
         colonnes = line.split()
         ic = iter(colonnes)
-        next(ic) # on passe la premiere colonne qui contient le nom de la ligne
+        next(ic)  # on passe la premiere colonne qui contient le nom de la ligne
         for j, c in enumerate(ic):
             # rempli le tableau sous la forme bigramme["A"]["B"] = 65222
             bigramme[i][j] = int(c)
 
 # fonction qui retourne l'apparition du bigramme des lettres c1 et c2 dans le corpus
-def getBigrammeFrequency(bigramme, c1, c2):
+
+
+def get_bigramme_frequency(bigramme, c1, c2):
     return bigramme[ord(c1) - ord('A')][ord(c2) - ord('A')]
 
 
@@ -33,6 +38,8 @@ def generateEmptyMatrix():
     return [["" for x in range(10)] for y in range(4)]
 
 # dessine le clavier dans la console avec les traits
+
+
 def printKeyboardInCLI(clavier):
     for i in range(4):
         for j in range(10):
@@ -42,6 +49,8 @@ def printKeyboardInCLI(clavier):
         print()
 
 # rempli aléatoirement le clavier sachant qu'il y a 26 lettres et 40 touches
+
+
 def fillRandomly(clavier):
     letters = list("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
     # list de touche vide
@@ -56,6 +65,7 @@ def fillRandomly(clavier):
                 letters.pop(index)
     return clavier
 
+
 def printKeyboardInPlot(clavier):
     fig, ax = plt.subplots()
     # cache les axes
@@ -65,29 +75,10 @@ def printKeyboardInPlot(clavier):
     # dessine le clavier
     ax.table(cellText=clavier, loc='center', cellLoc='center')
     fig.tight_layout()
-    plt.show()
-
-def distanceEuclidienne(clavier, letter1:str, letter2:str):
-    # trouver la position des lettres
-    for i in range(4):
-        for j in range(10):
-            if clavier[i][j] == letter1:
-                pos1 = (i,j)
-            if clavier[i][j] == letter2:
-                pos2 = (i,j)
-    # calculer la distance euclidienne
-    return np.sqrt((pos1[0] - pos2[0])**2 + (pos1[1] - pos2[1])**2)
-
-def adaptation(clavier):
-    somme = 0
-    for i in range(26):
-        for j in range(26):
-            if i == j:
-                continue
-            lettre1 = chr(ord('A') + i)
-            lettre2 = chr(ord('A') + j)
-            somme += getBigrammeFrequency(bigramme, lettre1, lettre2) * distanceEuclidienne(clavier, lettre1, lettre2)
-    return somme
+    plt.savefig('resultats/clavier.png')
+    if plt.show():
+        plt.savefig('clavier.png')
+        plt.close()
 
 def croisement(parent1: dict, parent2: dict):
     child1 = dict()
@@ -135,15 +126,18 @@ def croisement(parent1: dict, parent2: dict):
                         break
     return child1, child2
 
-def mutation(clavier:dict):
+
+def mutation(clavier: dict):
     # choisir deux lettre a échanger
     letter1 = random.randint(0, 25)
     letter2 = random.randint(0, 25)
     # échanger les lettres
-    clavier[chr(ord('A') + letter1)], clavier[chr(ord('A') + letter2)] = clavier[chr(ord('A') + letter2)], clavier[chr(ord('A') + letter1)]
+    clavier[chr(ord('A') + letter1)], clavier[chr(ord('A') + letter2)
+                                              ] = clavier[chr(ord('A') + letter2)], clavier[chr(ord('A') + letter1)]
     return clavier
 
-def adaptation(clavier:dict):
+
+def adaptation(clavier: dict):
     somme = 0
     for i in range(26):
         for j in range(26):
@@ -151,17 +145,19 @@ def adaptation(clavier:dict):
                 continue
             lettre1 = chr(ord('A') + i)
             lettre2 = chr(ord('A') + j)
-            somme += getBigrammeFrequency(bigramme, lettre1, lettre2) * distanceEuclidienne(clavier, lettre1, lettre2)
+            somme += get_bigramme_frequency(bigramme, lettre1, lettre2) * \
+                distanceEuclidienne(clavier, lettre1, lettre2)
     return somme
 
-def verifierVecteurClavier(clavier:dict):
+def verifier_vecteur_clavier(clavier: dict):
+    """Vérifie si le vecteur clavier est valide"""
     if len(clavier) != 26:
         return False, "Le vecteur clavier n'a pas 26 lettres"
     # vérifier que les lettres sont bien dans l'alphabet
-    for letter in clavier:
-        if letter < 'A' or letter > 'Z':
+    for l in clavier:
+        if l < 'A' or l > 'Z':
             print("pas bon")
-            return False, "La lettre " + letter + " n'est pas dans l'alphabet"
+            return False, "La lettre " + l + " n'est pas dans l'alphabet"
     # verifier que les positions ne sont pas dupliquées
     verif = []
     for position in clavier.values():
@@ -170,11 +166,13 @@ def verifierVecteurClavier(clavier:dict):
         verif.append(position)
     return True, "Le vecteur clavier est valide"
 
-def distanceEuclidienne(clavier, letter1:str, letter2:str):
+
+def distanceEuclidienne(clavier, letter1: str, letter2: str):
     pos1 = clavier[letter1]
     pos2 = clavier[letter2]
     # calculer la distance euclidienne
     return np.sqrt((pos1[0] - pos2[0])**2 + (pos1[1] - pos2[1])**2)
+
 
 def generateRandomKeyboardVector():
     positionsToFill = [(i, j) for i in range(4) for j in range(10)]
@@ -189,6 +187,8 @@ def generateRandomKeyboardVector():
     return keyboardVector
 
 # générer une population de 100 claviers
+
+
 def generatePopulation():
     population = []
     for i in range(135):
@@ -197,12 +197,16 @@ def generatePopulation():
     return population
 
 # sélectionner les meilleurs claviers
-def selection(population:list):
+
+
+def selection(population: list):
     population.sort(key=adaptation)
     return population[:50]
 
 # générer une nouvelle population - génération
-def generateNewPopulation(population:list):
+
+
+def generateNewPopulation(population: list):
     newPopulation = []
     # ajouter les meilleurs claviers
     parents = selection(population)
@@ -212,12 +216,12 @@ def generateNewPopulation(population:list):
         parent1 = random.choice(parents)
         parent2 = random.choice(parents)
         child1, child2 = croisement(parent1, parent2)
-        t,r = verifierVecteurClavier(child1)
+        t, r = verifier_vecteur_clavier(child1)
         if not t:
             print("erreur enfant 1")
             print(r)
             print(child1)
-        t,r = verifierVecteurClavier(child2)
+        t, r = verifier_vecteur_clavier(child2)
         if not t:
             print("erreur enfant 2")
             print(r)
@@ -231,15 +235,16 @@ def generateNewPopulation(population:list):
         clavier = random.choice(population)
         mutant = mutation(clavier)
         # newPopulation.append()
-        if not verifierVecteurClavier(mutant):
+        if not verifier_vecteur_clavier(mutant):
             print("erreur")
         newPopulation.append(mutant)
     return newPopulation
 
+
 # générer une population - etat de départ
 population = generatePopulation()
 
-meilleuresAdaptations = [] # pour dessiner le graphique
+meilleuresAdaptations = []  # pour dessiner le graphique
 
 # générer 100 nouvelles populations
 for i in range(400):
@@ -247,7 +252,8 @@ for i in range(400):
     population.sort(key=adaptation)
     score = adaptation(population[0])
     meilleuresAdaptations.append(score)
-    print("Génération ", i,"taille de la population : ",len(population), " Meilleur individu : ", score)
+    print("Génération ", i, "taille de la population : ",
+          len(population), " Meilleur individu : ", score)
 
 population.sort(key=adaptation)
 # afficher le meilleur clavier sous forme de tableau
@@ -257,27 +263,34 @@ print(population[0])
 print(adaptation(population[0]))
 
 # transforme le vecteur clavier en matrice
-def keyboardVectorToMatrix(keyboardVector:dict):
+
+
+def keyboardVectorToMatrix(keyboardVector: dict):
     keyboardMatrix = generateEmptyMatrix()
     for letter in keyboardVector:
-        keyboardMatrix[keyboardVector[letter][0]][keyboardVector[letter][1]] = letter
+        keyboardMatrix[keyboardVector[letter][0]
+                       ][keyboardVector[letter][1]] = letter
     return keyboardMatrix
 
+
 mres = keyboardVectorToMatrix(population[0])
+
+# créer le dossier resultats s'il n'existe pas
+if not os.path.exists("resultats"):
+    os.makedirs("resultats")
 
 printKeyboardInPlot(mres)
 
 # genere un graphique avec meilleure adaptation en fonction du numéro de génération
 plt.plot(meilleuresAdaptations)
+plt.savefig("resultats/graphique.png")
 plt.show()
 
-with open("res.txt","w") as f:
-    # f.write(mres.__str__())
-    print(mres)
+with open("resultats/res.txt", "w") as f:
     for i in range(4):
         f.write("\n")
         for j in range(10):
-            letter  = mres[i][j]
+            letter = mres[i][j]
             if letter == '':
                 f.write('| |')
             else:
