@@ -76,9 +76,8 @@ def printKeyboardInPlot(clavier):
     ax.table(cellText=clavier, loc='center', cellLoc='center')
     fig.tight_layout()
     plt.savefig('resultats/clavier.png')
-    if plt.show():
-        plt.savefig('clavier.png')
-        plt.close()
+    plt.show()
+
 
 def croisement(parent1: dict, parent2: dict):
     child1 = dict()
@@ -148,6 +147,7 @@ def adaptation(clavier: dict):
             somme += get_bigramme_frequency(bigramme, lettre1, lettre2) * \
                 distanceEuclidienne(clavier, lettre1, lettre2)
     return somme
+
 
 def verifier_vecteur_clavier(clavier: dict):
     """Vérifie si le vecteur clavier est valide"""
